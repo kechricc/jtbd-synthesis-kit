@@ -1,0 +1,658 @@
+<title>From Transcripts to Tiers</title>
+<style>
+  :root {
+    --ground:      #F7F7F5;
+    --surface:     #FFFFFF;
+    --surface-sub: #EFEFEB;
+    --ink:         #191A1C;
+    --ink-mid:     #4A5057;
+    --ink-soft:    #6E757D;
+    --primary:     #2F4858;
+    --primary-tint:#E3EAEE;
+    --accent:      #9C5A36;
+    --accent-tint: #F2E4DA;
+    --rule:        #DFDFD9;
+    --rule-soft:   #EBEBE6;
+
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans:  ui-sans-serif, -apple-system, "Segoe UI", system-ui, sans-serif;
+    --mono:  ui-monospace, "Cascadia Mono", "Cascadia Code", Consolas, "Liberation Mono", monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #141618;
+      --surface:     #1C1F22;
+      --surface-sub: #23272B;
+      --ink:         #E9E7E2;
+      --ink-mid:     #B3B9BF;
+      --ink-soft:    #8B9299;
+      --primary:     #9BBACB;
+      --primary-tint:#22323C;
+      --accent:      #D5906A;
+      --accent-tint: #362520;
+      --rule:        #32373B;
+      --rule-soft:   #262A2E;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground:      #141618;
+    --surface:     #1C1F22;
+    --surface-sub: #23272B;
+    --ink:         #E9E7E2;
+    --ink-mid:     #B3B9BF;
+    --ink-soft:    #8B9299;
+    --primary:     #9BBACB;
+    --primary-tint:#22323C;
+    --accent:      #D5906A;
+    --accent-tint: #362520;
+    --rule:        #32373B;
+    --rule-soft:   #262A2E;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.62;
+    margin: 0;
+    padding: 0 1.5rem 6rem;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 46rem; margin: 0 auto; }
+
+  .eyebrow {
+    font-family: var(--sans);
+    font-size: 0.688rem;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 1rem;
+  }
+
+  /* ---------- masthead ---------- */
+
+  header.masthead {
+    padding: 4.5rem 0 2.5rem;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.4rem, 6.5vw, 3.6rem);
+    line-height: 1.06;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    margin: 0 0 1.25rem;
+  }
+
+  .standfirst {
+    font-size: 1.18rem;
+    line-height: 1.55;
+    color: var(--ink-mid);
+    margin: 0;
+    max-width: 34rem;
+  }
+
+  .provenance {
+    font-family: var(--sans);
+    font-size: 0.813rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 1.75rem 0 0;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--rule-soft);
+    max-width: 34rem;
+  }
+
+  /* ---------- sections ---------- */
+
+  section { padding-top: 3.5rem; }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    text-wrap: balance;
+    margin: 0 0 1.5rem;
+  }
+
+  h3 {
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.35;
+    text-wrap: balance;
+    margin: 0 0 0.5rem;
+  }
+
+  p { margin: 0 0 1.15rem; }
+  p:last-child { margin-bottom: 0; }
+
+  strong { font-weight: 600; }
+  em { font-style: italic; }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: var(--surface-sub);
+    padding: 0.12em 0.36em;
+    border-radius: 3px;
+  }
+
+  .lede {
+    font-size: 1.06rem;
+    color: var(--ink-mid);
+    max-width: 36rem;
+  }
+
+  /* ---------- evidence chain ---------- */
+
+  .chain {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0.5rem;
+    margin: 0 0 1.25rem;
+    padding: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+  }
+
+  .link {
+    flex: 1 1 7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.85rem 0.75rem;
+    background: var(--surface-sub);
+    border-radius: 2px;
+  }
+
+  .link .k {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--primary);
+    letter-spacing: 0.02em;
+  }
+
+  .link .v {
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    line-height: 1.35;
+    color: var(--ink-mid);
+  }
+
+  .arrow {
+    align-self: center;
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    flex: 0 0 auto;
+  }
+
+  .chain-note {
+    font-family: var(--sans);
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  /* ---------- stages ---------- */
+
+  .stages {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .stage {
+    display: grid;
+    grid-template-columns: 3.25rem 1fr;
+    gap: 0 1.25rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--rule-soft);
+  }
+  .stage:first-child { border-top: 1px solid var(--rule); }
+
+  .stage-num {
+    font-family: var(--mono);
+    font-size: 0.813rem;
+    color: var(--ink-soft);
+    padding-top: 0.3rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stage-body > *:last-child { margin-bottom: 0; }
+
+  .role {
+    display: inline-block;
+    font-family: var(--sans);
+    font-size: 0.656rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.45rem;
+    border-radius: 2px;
+    margin-bottom: 0.6rem;
+    vertical-align: 0.15em;
+  }
+  .role-agent  { background: var(--primary-tint); color: var(--primary); }
+  .role-script { background: var(--surface-sub);  color: var(--ink-soft); }
+  .role-human  { background: var(--accent-tint);  color: var(--accent); }
+
+  .stage p {
+    font-size: 0.975rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .why {
+    font-family: var(--sans);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--ink-mid);
+    margin: 0.85rem 0 0;
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--rule);
+  }
+  .why b {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  /* ---------- rhythm callout ---------- */
+
+  .rhythm {
+    margin: 2.5rem 0 0;
+    padding: 1.5rem;
+    background: var(--primary-tint);
+    border-radius: 2px;
+  }
+  .rhythm p {
+    font-family: var(--sans);
+    font-size: 0.925rem;
+    line-height: 1.6;
+    margin: 0;
+    color: var(--ink);
+  }
+  .rhythm p + p { margin-top: 0.75rem; }
+
+  /* ---------- ideas ---------- */
+
+  .ideas {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .idea p {
+    font-size: 0.975rem;
+    margin-bottom: 0.75rem;
+  }
+  .idea p:last-child { margin-bottom: 0; }
+
+  /* ---------- table ---------- */
+
+  .table-scroll {
+    overflow-x: auto;
+    margin: 0 0 1.25rem;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: var(--surface);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--sans);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.688rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--rule);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--rule-soft);
+    color: var(--ink-mid);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  td.what {
+    color: var(--ink);
+    font-weight: 600;
+    min-width: 11rem;
+  }
+
+  .verdict {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+  .v-keep   { color: var(--primary); }
+  .v-change { color: var(--accent); }
+
+  /* ---------- limits ---------- */
+
+  .limits {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .limit {
+    padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 2px 2px 0;
+  }
+  .limit h3 { margin-bottom: 0.45rem; }
+  .limit p {
+    font-size: 0.925rem;
+    color: var(--ink-mid);
+    margin-bottom: 0;
+  }
+
+  /* ---------- close ---------- */
+
+  .close {
+    margin-top: 3.5rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--ink);
+  }
+
+  .path {
+    font-family: var(--mono);
+    font-size: 0.813rem;
+    color: var(--primary);
+    display: block;
+    margin: 0.35rem 0 1.25rem;
+    word-break: break-all;
+  }
+
+  ol.steps {
+    font-family: var(--sans);
+    font-size: 0.925rem;
+    line-height: 1.6;
+    color: var(--ink-mid);
+    padding-left: 1.25rem;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  ol.steps b { color: var(--ink); font-weight: 600; }
+
+  @media (max-width: 34rem) {
+    body { font-size: 16px; padding: 0 1.15rem 4rem; }
+    .stage { grid-template-columns: 1fr; gap: 0; }
+    .stage-num { padding-top: 0; margin-bottom: 0.35rem; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">Research method</p>
+    <h1>From Transcripts to Tiers</h1>
+    <p class="standfirst">A pipeline that turns interview transcripts into a tiered map of jobs to be done, where every claim traces back to a named person's exact words in two clicks.</p>
+    <p class="provenance">Extracted from a working implementation: 37 interviews with one population, 8 with a second, run over six weeks. The prompts and scripts described here are the ones that were actually used, generalized for a new subject.</p>
+  </header>
+
+  <section>
+    <p class="eyebrow">What it produces</p>
+    <h2>An argument you can audit, not a summary you have to trust</h2>
+    <p class="lede">The output is a single document organized by priority tier. Under each tier sit the jobs; under each job sit its clusters in full; under each cluster sits a table naming every interview that surfaced it, linked to the exact finding, linked to the verbatim quote.</p>
+    <p>Nothing is condensed on the way up. A reader who doubts a tier can descend to the sentence a person said, and a reader who accepts it can stay at the top. Both are reading the same file.</p>
+
+    <div class="chain">
+      <div class="link"><span class="k">transcript</span><span class="v">What one person actually said</span></div>
+      <span class="arrow">&rarr;</span>
+      <div class="link"><span class="k">S07-J3</span><span class="v">One finding, one verbatim quote</span></div>
+      <span class="arrow">&rarr;</span>
+      <div class="link"><span class="k">Cluster 12</span><span class="v">Findings sharing a progress sought</span></div>
+      <span class="arrow">&rarr;</span>
+      <div class="link"><span class="k">JTBD #4</span><span class="v">Super cluster, in a tier</span></div>
+    </div>
+    <p class="chain-note">Each arrow is a real link in the file, not a conceptual one. The finding ID is a heading; the cluster table cell is an anchor to it. Break the chain anywhere and the document still renders perfectly, which is exactly why the pipeline validates it mechanically at three separate points.</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">The pipeline</p>
+    <h2>Seven stages</h2>
+    <p class="lede">Three of them are judgment, three are mechanism, and the last is yours. The alternation is the design.</p>
+
+    <ol class="stages">
+
+      <li class="stage">
+        <div class="stage-num">01</div>
+        <div class="stage-body">
+          <span class="role role-agent">Agent</span>
+          <h3>Analyze each interview, independently</h3>
+          <p>One agent per transcript, each with a fresh context. It produces two documents in one response: <strong>Document A</strong>, the admissible findings, and <strong>Document B</strong>, everything that failed the evidence rules.</p>
+          <p class="why"><b>Why independent.</b> An analyst who has read the previous six transcripts finds the seventh confirming what it already believes. Independence is the only thing that makes a cross-interview count mean anything. It is a design constraint, not a performance one.</p>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage-num">02</div>
+        <div class="stage-body">
+          <span class="role role-script">Script</span>
+          <h3>Split and normalize</h3>
+          <p>The response is cut on a delimiter into the A and B corpora, and each finding's bold ID label is converted into a real Markdown heading.</p>
+          <p class="why"><b>Why a script.</b> Both operations are exact and verifiable, so nothing should be deciding them. The normalizer in particular fixes a failure that is invisible: against a bold label rather than a heading, every deep link in the final document is syntactically valid and completely dead. Nothing looks wrong until a human clicks one.</p>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage-num">03</div>
+        <div class="stage-body">
+          <span class="role role-agent">Agent</span>
+          <h3>Pass one: cluster by the progress sought</h3>
+          <p>All Document A files at once. Findings are grouped by whether solving one would solve the other, ordered by breadth of support, with unmatched findings preserved as orphans rather than forced into a cluster.</p>
+          <p class="why"><b>Why breadth is not priority.</b> The prompt forbids ranking language and forbids denominators. Clusters are ordered by how many interviews surfaced them purely as presentation, and the document says so, because an ordered list is read as a priority list unless it argues otherwise.</p>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage-num">04</div>
+        <div class="stage-body">
+          <span class="role role-script">Script</span>
+          <h3>Extract the slim pass-two inputs</h3>
+          <p>Two small files: a manifest of every cluster with its members, and the disconfirmation sections of every Document B, verbatim.</p>
+          <p class="why"><b>Why slim.</b> The next stage must not see the supporting evidence. Withholding it is what makes the counter-evidence pass honest, and the cheapest way to guarantee an agent does not read something is to not put it in the file.</p>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage-num">05</div>
+        <div class="stage-body">
+          <span class="role role-agent">Agent</span>
+          <h3>Pass two: gather counter-evidence</h3>
+          <p>Working only from Document B material, it produces a patch: for each cluster, the quotes in which someone rejected that job. It cannot add, merge, rename or reorder anything, and it never sees the synthesis it is enriching.</p>
+          <p class="why"><b>Why a separate pass.</b> An agent holding a cluster's supporting evidence will not argue against it with any conviction. This pass is structurally incapable of being talked out of a contradiction, because it was never shown the argument.</p>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage-num">06</div>
+        <div class="stage-body">
+          <span class="role role-script">Script</span>
+          <h3>Splice</h3>
+          <p>The patch is merged into the synthesis by exact string match on cluster names. If a single name fails to match, nothing is written and the run exits with the mismatched keys listed on both sides.</p>
+          <p class="why"><b>Why all-or-nothing.</b> A half-spliced document is worse than none: it looks finished. Where pass one had already filled a disconfirmations field itself, the splicer merges rather than replaces, because overwriting would silently destroy real counter-evidence.</p>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage-num">07</div>
+        <div class="stage-body">
+          <span class="role role-human">You</span>
+          <h3>Group into super clusters, and tier them</h3>
+          <p>You read the enriched synthesis, group clusters by similarity, assign each group a tier, and write your reasoning. Then an agent audits that reasoning against the data, and a script assembles the view.</p>
+          <p class="why"><b>Why this is the point.</b> Every stage before this exists so that this judgment rests on something. The machine verifies your numbers, names the claims your data cannot test, and says what each placement actually rests on. It never changes a tier and never edits your argument.</p>
+        </div>
+      </li>
+
+    </ol>
+
+    <div class="rhythm">
+      <p><strong>Read the role chips down the column.</strong> Agent, script, agent, script, agent, script, you. No agent is ever asked to do something exact, and no script is ever asked to do something that requires judgment.</p>
+      <p>That separation is what makes failures legible. When a script fails it fails loudly and writes nothing. When an agent fails it produces something plausible, so every agent stage is followed by a mechanical check on the part of its output that can be checked.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Design decisions</p>
+    <h2>The three ideas doing the work</h2>
+
+    <ul class="ideas">
+      <li class="idea">
+        <h3>1. Weak evidence is routed, not discarded</h3>
+        <p>Every analyst produces two documents. Document A takes only firsthand, behavior-backed, quote-anchored findings. Document B takes the secondhand stories, the opinions with no action behind them, the ideas the interviewer accidentally planted, and the things that mattered but have no slot in a jobs frame.</p>
+        <p>Discarding that material loses signal; promoting it corrupts the counts. Routing it to a document with a different job does neither, and Document B turns out to be where the counter-evidence lives, which is what makes stage 5 possible at all.</p>
+      </li>
+
+      <li class="idea">
+        <h3>2. Absence is never evidence</h3>
+        <p>An interview where a job never came up says nothing about that job. Interviews sample what the conversation reached, not everything a person experienced. So no count in the output has a denominator: it is always "surfaced in 13 interviews", never "13 of 37".</p>
+        <p>This is enforced in three places because readers reconstruct the denominator anyway. The prompts forbid it, the build script omits it, and the final document states the rule in its own preamble.</p>
+      </li>
+
+      <li class="idea">
+        <h3>3. Human judgment and machine verification are published side by side</h3>
+        <p>The tiering rationale is yours, reproduced in your voice, uncorrected. The audit sits directly beneath it in a separate, visibly labelled field. A reader sees the argument that was made and the check on it, and can disagree with either.</p>
+        <p>If the machine were allowed to fix the rationale instead, both fields would collapse into one and the document would become a machine's opinion wearing a human's byline. The audit is worth reading precisely because it is not the argument.</p>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="eyebrow">Porting it</p>
+    <h2>What changes for a new subject</h2>
+    <p class="lede">Almost nothing structural. The method has been run on two unrelated populations, and the difference between them was nine placeholders and one paragraph.</p>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Component</th><th></th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="what">Evidence rules</td>
+            <td class="verdict v-keep">keep</td>
+            <td>Firsthand only, behavior over opinion, anchored over general, volunteered over prompted, verbatim quote mandatory. Subject-neutral.</td>
+          </tr>
+          <tr>
+            <td class="what">The A/B split</td>
+            <td class="verdict v-keep">keep</td>
+            <td>Including the delimiter string, which a script matches exactly.</td>
+          </tr>
+          <tr>
+            <td class="what">Two-pass structure</td>
+            <td class="verdict v-keep">keep</td>
+            <td>Support and counter-evidence gathered by passes that cannot see each other.</td>
+          </tr>
+          <tr>
+            <td class="what">ID scheme</td>
+            <td class="verdict v-keep">keep</td>
+            <td><code>S07-J3</code>. Carries no meaning beyond being parseable. Changing it means editing regexes in five files for no gain.</td>
+          </tr>
+          <tr>
+            <td class="what">All five scripts</td>
+            <td class="verdict v-keep">keep</td>
+            <td>They match on structure, never on subject matter.</td>
+          </tr>
+          <tr>
+            <td class="what">Project context</td>
+            <td class="verdict v-change">rewrite</td>
+            <td>One paragraph: who is being interviewed and the single question the project answers.</td>
+          </tr>
+          <tr>
+            <td class="what">Provider list</td>
+            <td class="verdict v-change">rewrite</td>
+            <td>What people might hire to get the job done. The highest-leverage item on this page: it determines what the analysis can see. Write it after skimming three transcripts, never before.</td>
+          </tr>
+          <tr>
+            <td class="what">Disconfirming question</td>
+            <td class="verdict v-change">rewrite</td>
+            <td>The question in your guide that lets someone reject your premise. If you never asked one, pass two will find little, and that is a limitation of the interview guide rather than a finding.</td>
+          </tr>
+          <tr>
+            <td class="what">Tier definitions</td>
+            <td class="verdict v-change">rewrite</td>
+            <td>What the tiers mean for your project, and how many there are.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Before you present results</p>
+    <h2>What this method cannot do</h2>
+    <p class="lede">These are properties of the approach, not bugs awaiting a fix. Each was found by running it.</p>
+
+    <ul class="limits">
+      <li class="limit">
+        <h3>Cluster boundaries are not reproducible</h3>
+        <p>Three runs of the clustering pass over an identical corpus produced 18, 17 and 19 clusters, with only 2 of roughly 9 orphans stable across all three. Individual findings are stable; the boundaries drawn around them are not. Never defend a specific cluster boundary as though it were a finding, and if reproducibility matters for your purposes, treat it as the largest open problem here.</p>
+      </li>
+      <li class="limit">
+        <h3>Counts are people, not proportions</h3>
+        <p>The whole pipeline refuses denominators, and readers supply them anyway. Say the population size once, in the preamble, and never in a position where it can be read as the bottom of a fraction.</p>
+      </li>
+      <li class="limit">
+        <h3>Populations never merge</h3>
+        <p>If you interview two groups, tier them separately and keep their counts apart. Three of one and three of the other are not six, and a shared tier scale is a shared priority ordering, not a shared unit.</p>
+      </li>
+      <li class="limit">
+        <h3>The corpus cannot speak for who is missing</h3>
+        <p>Whoever was hardest to recruit is whoever your findings are weakest about, and it is usually the people who had already disengaged. Where a rationale rests on such a group, the audit should mark it as an inference rather than a count.</p>
+      </li>
+    </ul>
+  </section>
+
+  <section class="close">
+    <p class="eyebrow">Getting started</p>
+    <h2>The kit</h2>
+    <span class="path">jtbd-synthesis-starter-kit\</span>
+    <ol class="steps">
+      <li><b>Fill in PROJECT.md.</b> Nine placeholders, each explained, with the reference project's answers shown alongside. About twenty minutes.</li>
+      <li><b>Find-and-replace across the four prompts.</b> Change nothing else in them.</li>
+      <li><b>Run six to eight interviews end to end first.</b> Both prior corpora were tuned small and run large. What you are looking for at this stage is a provider list that does not match what people actually hired, and it is far cheaper to find at eight than at thirty-seven.</li>
+      <li><b>Read the output at every stage.</b> Every bug found in this pipeline so far was found by reading a cluster block top to bottom, not by a passing check.</li>
+    </ol>
+  </section>
+
+</div>

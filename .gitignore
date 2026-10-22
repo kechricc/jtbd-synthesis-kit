@@ -1,0 +1,11 @@
+# Keep the folder structure, never commit interview data or generated results
+inputs/**
+!inputs/**/
+!inputs/**/.gitkeep
+outputs/**
+!outputs/**/
+!outputs/**/.gitkeep
+pass2-inputs/**
+!pass2-inputs/.gitkeep
+_backups/
+*.bak
